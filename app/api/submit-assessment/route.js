@@ -1,198 +1,103 @@
 // app/api/submit-assessment/route.js
 import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabaseClient";
 
-/**
- * Expected JSON payload from the frontend:
- *
- * {
- *   lead: {
- *     name: string,
- *     email: string,
- *     phone?: string,
- *     website?: string
- *   },
- *   answers: {
- *     // each key = section id, each value = array of numbers 0–3
- *     // e.g. operations: [0,2,3,1, ...]
- *     frontDesk: number[],
- *     benefitsHr: number[],
- *     sales: number[],
- *     marketing: number[],
- *     support: number[],
- *     hrHiring: number[],
- *     leadCapture: number[],
- *     techStack: number[]
- *   }
- * }
- */
+// Same section keys as in the assessment page
+const SECTION_LABELS = {
+  frontDesk: "Front Desk & Communication Load",
+  benefitsHr: "Benefits, HR & Employee Support Load",
+  sales: "Sales, Leads & Website Funnel",
+  marketing: "Marketing, Social Media & Presence",
+  support: "Support, Communication & Customer Experience",
+  hrHiring: "HR, Hiring & Employee Support",
+  leadCapture: "Lead Capture & Sales Process",
+  techStack: "Tech Stack, Systems & Workflow",
+};
 
-const SECTION_CONFIG = [
-  { key: "frontDesk", label: "Front Desk & Communication Load" },
-  { key: "benefitsHr", label: "Benefits, HR & Employee Support" },
-  { key: "sales", label: "Sales, Leads & Website Funnel" },
-  { key: "marketing", label: "Marketing & Social Presence" },
-  { key: "support", label: "Support, Communication & Experience" },
-  { key: "hrHiring", label: "HR, Hiring & Employee Support" },
-  { key: "leadCapture", label: "Lead Capture & Sales Process" },
-  { key: "techStack", label: "Tech Stack, Systems & Workflow" },
-];
+// Turn raw answers (0=best, 3=worst) into an “automation potential” score
+function computeScores(answers) {
+  let totalRaw = 0;
+  let totalMax = 0;
 
-function computeSectionScore(values = []) {
-  if (!values.length) return { raw: 0, max: 0, score: 0 };
+  const sections = Object.entries(answers || {}).map(([key, arr]) => {
+    const numeric = Array.isArray(arr) ? arr.map((v) => Number(v) || 0) : [];
+    const max = numeric.length * 3;
 
-  const raw = values.reduce((sum, v) => sum + (Number(v) || 0), 0);
-  const max = values.length * 3; // A=0, B=1, C=2, D=3
-  const score = Math.round((raw / max) * 100);
+    // High pain = high automation potential => invert 0..3 to 3..0
+    const raw = numeric.reduce((sum, val) => sum + (3 - val), 0);
 
-  return { raw, max, score };
-}
+    totalRaw += raw;
+    totalMax += max;
 
-function classifyTier(overallScore) {
-  if (overallScore < 40) return "Manual-Heavy";
-  if (overallScore < 60) return "Emerging Automation";
-  if (overallScore < 80) return "High Leverage Operator";
-  return "AI-Ready Business";
-}
+    const score = max > 0 ? Math.round((raw / max) * 100) : 0;
 
-function findTopBottlenecks(sectionScores, count = 2) {
-  const sorted = [...sectionScores].sort((a, b) => a.score - b.score);
-  return sorted.slice(0, count);
-}
+    return {
+      key,
+      label: SECTION_LABELS[key] || key,
+      score,
+    };
+  });
 
-function inferQuickWins(bottlenecks) {
-  const wins = [];
+  const overallScore =
+    totalMax > 0 ? Math.round((totalRaw / totalMax) * 100) : 0;
 
-  for (const b of bottlenecks) {
-    switch (b.key) {
-      case "frontDesk":
-        wins.push(
-          "Turn your most common frontline questions into instant answers.",
-          "Add smart triage so calls are routed correctly the first time."
-        );
-        break;
-      case "benefitsHr":
-        wins.push(
-          "Centralize HR & benefits answers in a simple self-service portal.",
-          "Automate reminders for forms, deadlines, and policy updates."
-        );
-        break;
-      case "sales":
-        wins.push(
-          "Respond to every new lead instantly with an automated first-touch.",
-          "Build a simple follow-up sequence so no warm lead goes cold."
-        );
-        break;
-      case "marketing":
-        wins.push(
-          "Create a weekly content rhythm with pre-scheduled posts.",
-          "Automatically capture and respond to social media inquiries."
-        );
-        break;
-      case "support":
-        wins.push(
-          "Convert your most repeated questions into a smart FAQ flow.",
-          "Offer 24/7 support coverage with guided responses."
-        );
-        break;
-      case "hrHiring":
-        wins.push(
-          "Standardize onboarding checklists and automate status updates.",
-          "Route PTO and schedule changes through a single, trackable flow."
-        );
-        break;
-      case "leadCapture":
-        wins.push(
-          "Add a clear call-to-action and simple form on your website.",
-          "Automate lead routing and first response based on source."
-        );
-        break;
-      case "techStack":
-        wins.push(
-          "Reduce the number of tools your team jumps between every day.",
-          "Sync your core tools so data doesn’t have to be re-entered."
-        );
-        break;
-      default:
-        break;
-    }
-  }
+  let tier = "High Automation Potential";
+  if (overallScore >= 80) tier = "Already Running Smoothly";
+  else if (overallScore >= 60) tier = "Ready to Layer Automations";
+  else if (overallScore >= 40) tier = "Big Wins Available";
 
-  // De-duplicate and keep it tight
-  const unique = Array.from(new Set(wins));
-  return unique.slice(0, 5);
+  // Simple quick-wins list based on weakest sections
+  const weakest = [...sections].sort((a, b) => a.score - b.score).slice(0, 3);
+  const quickWins = weakest.map(
+    (sec) =>
+      `Heaven can immediately remove busywork in **${sec.label}** by automating repetitive questions, routing, and follow-ups.`
+  );
+
+  return { overallScore, tier, sections, quickWins };
 }
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { lead, answers } = body || {};
+    const { lead = {}, answers = {} } = body || {};
 
-    if (!lead || !answers) {
+    const scores = computeScores(answers);
+
+    // Map sections to a key → score object for storage
+    const categoryScores = {};
+    scores.sections.forEach((sec) => {
+      categoryScores[sec.key] = sec.score;
+    });
+
+    const { data, error } = await supabase
+      .from("assessments")
+      .insert({
+        email: lead.email || null,
+        company_name: lead.company || null,
+        overall_score: scores.overallScore,
+        category_scores: categoryScores,
+        payload: { lead, answers },
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[submit-assessment] Supabase insert error:", error);
       return NextResponse.json(
-        { ok: false, error: "Missing lead or answers payload." },
-        { status: 400 }
+        { ok: false, error: "Failed to save assessment." },
+        { status: 500 }
       );
     }
 
-    // 1) Compute section scores
-    const sectionScores = SECTION_CONFIG.map((section) => {
-      const values = answers[section.key] || [];
-      const { raw, max, score } = computeSectionScore(values);
-      return {
-        key: section.key,
-        label: section.label,
-        raw,
-        max,
-        score,
-      };
+    return NextResponse.json({
+      ok: true,
+      id: data.id,
+      ...scores,
     });
-
-    // 2) Compute overall score
-    const totalRaw = sectionScores.reduce((sum, s) => sum + s.raw, 0);
-    const totalMax = sectionScores.reduce((sum, s) => sum + s.max, 0);
-    const overallScore =
-      totalMax > 0 ? Math.round((totalRaw / totalMax) * 100) : 0;
-
-    // 3) Tier classification
-    const tier = classifyTier(overallScore);
-
-    // 4) Top bottlenecks (lowest scores)
-    const bottlenecks = findTopBottlenecks(sectionScores, 2);
-
-    // 5) Quick wins inferred from bottlenecks
-    const quickWins = inferQuickWins(bottlenecks);
-
-    // 👉 Here is where you'd persist to a DB, send email, trigger SMS, etc.
-    // For now we just log it server-side as a placeholder.
-    console.log("New HeavenDesk assessment:", {
-      lead,
-      overallScore,
-      tier,
-      sectionScores,
-      bottlenecks,
-    });
-
-    return NextResponse.json(
-      {
-        ok: true,
-        lead: {
-          name: lead.name || "",
-          email: lead.email || "",
-          phone: lead.phone || "",
-          website: lead.website || "",
-        },
-        overallScore,
-        tier,
-        sections: sectionScores,
-        bottlenecks,
-        quickWins,
-      },
-      { status: 200 }
-    );
   } catch (err) {
-    console.error("Error in submit-assessment route:", err);
+    console.error("[submit-assessment] Handler error:", err);
     return NextResponse.json(
-      { ok: false, error: "Invalid request or server error." },
+      { ok: false, error: "Unexpected error submitting assessment." },
       { status: 500 }
     );
   }

@@ -1030,3 +1030,215 @@ body {
     align-items: flex-start;
   }
 }
+/* HeavenDesk Discovery – match assessment look */
+
+.discovery-card {
+  padding: 24px 24px 20px;
+}
+
+.discovery-banner {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.discovery-banner-success {
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  background: rgba(6, 95, 70, 0.25);
+  color: #bbf7d0;
+}
+
+.discovery-banner-error {
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: rgba(127, 29, 29, 0.4);
+  color: #fecaca;
+}
+
+.discovery-intro {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.discovery-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 14px;
+  font-size: 10px;
+}
+
+.discovery-chip {
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 4px 8px;
+  color: #9ca3af;
+}
+
+.discovery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-size: 11px;
+  color: #e5e7eb;
+}
+
+/* sections inside the card */
+
+.discovery-section {
+  border-top: 1px solid #0f172a;
+  padding-top: 12px;
+}
+
+.discovery-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.discovery-section-header {
+  margin-bottom: 6px;
+}
+
+.discovery-section-title {
+  font-size: 13px;
+}
+
+.discovery-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* fields */
+
+.discovery-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discovery-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+.discovery-input,
+.discovery-select,
+.discovery-textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #e5e7eb;
+  outline: none;
+}
+
+.discovery-input::placeholder,
+.discovery-textarea::placeholder {
+  color: #6b7280;
+}
+
+.discovery-input:focus,
+.discovery-select:focus,
+.discovery-textarea:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.5);
+}
+
+/* checkboxes */
+
+.discovery-checkbox-grid {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .discovery-checkbox-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.discovery-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid #111827;
+  background: rgba(2, 6, 23, 0.9);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #e5e7eb;
+}
+
+.discovery-checkbox input {
+  margin-top: 2px;
+}
+
+.discovery-help {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* footer */
+
+.discovery-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+@media (min-width: 768px) {
+  .discovery-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+/* === HeavenDesk.ai Discovery Gradient Styles (Safe Version) === */
+
+/* 1. Shared gradient */
+:root {
+  --hd-gradient: linear-gradient(90deg, #3BA4F8 0%, #E6A65E 100%);
+}
+
+/* 2. Gradient title on Discovery page */
+.discovery-page h1.gradient-text {
+  background-image: var(--hd-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 3. Gradient Section Eyebrows (SECTION 1, SECTION 2, …) */
+.discovery-section-title {
+  background-image: var(--hd-gradient);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+/* 4. Dropdown styling — SAFE (does NOT break native select behavior) */
+.discovery-form select {
+  border-radius: 10px;
+  border: 1px solid #2b3344;
+  padding: 8px 12px;
+  background-color: #0b111b;
+  color: #f5f7ff;
+}
+
+/* Highlight the selected option (works on most browsers) */
+.discovery-form select option:checked {
+  background: var(--hd-gradient);
+  color: #050a13;
+}

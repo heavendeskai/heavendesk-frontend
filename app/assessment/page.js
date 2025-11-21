@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 const SECTIONS = [
   {
@@ -212,12 +213,7 @@ const SECTIONS = [
       {
         id: "c4_1",
         text: "How consistently does your business post on social media?",
-        options: [
-          "Almost never.",
-          "A few times a month.",
-          "Weekly.",
-          "Daily or near-daily.",
-        ],
+        options: ["Almost never.", "A few times a month.", "Weekly.", "Daily or near-daily."],
       },
       {
         id: "c4_2",
@@ -262,12 +258,7 @@ const SECTIONS = [
       {
         id: "c4_6",
         text: "How confident are you in your overall digital presence?",
-        options: [
-          "Not confident.",
-          "Somewhat confident.",
-          "Mostly confident.",
-          "Very confident.",
-        ],
+        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
       },
     ],
   },
@@ -279,32 +270,17 @@ const SECTIONS = [
       {
         id: "c5_1",
         text: "How quickly do customers typically receive a response?",
-        options: [
-          "Hours or next day.",
-          "30–60 minutes.",
-          "Within 10–20 minutes.",
-          "Instantly (automated or staffed).",
-        ],
+        options: ["Hours or next day.", "30–60 minutes.", "Within 10–20 minutes.", "Instantly (automated or staffed)."],
       },
       {
         id: "c5_2",
         text: "How often do customers call or message asking the same repeating questions?",
-        options: [
-          "Constantly.",
-          "Several times a day.",
-          "Occasionally.",
-          "Rarely — we already have systems.",
-        ],
+        options: ["Constantly.", "Several times a day.", "Occasionally.", "Rarely — we already have systems."],
       },
       {
         id: "c5_3",
         text: "How easy is it for customers to find answers without calling you?",
-        options: [
-          "Very difficult.",
-          "Somewhat difficult.",
-          "Usually easy.",
-          "Extremely easy and intentional.",
-        ],
+        options: ["Very difficult.", "Somewhat difficult.", "Usually easy.", "Extremely easy and intentional."],
       },
       {
         id: "c5_4",
@@ -319,22 +295,12 @@ const SECTIONS = [
       {
         id: "c5_5",
         text: "Do customers regularly complain about delays, confusion, or missed messages?",
-        options: [
-          "Yes, often.",
-          "Sometimes.",
-          "Rarely.",
-          "Almost never.",
-        ],
+        options: ["Yes, often.", "Sometimes.", "Rarely.", "Almost never."],
       },
       {
         id: "c5_6",
         text: "How confident are you in your overall customer experience?",
-        options: [
-          "Not confident.",
-          "Somewhat confident.",
-          "Mostly confident.",
-          "Very confident.",
-        ],
+        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
       },
     ],
   },
@@ -346,12 +312,7 @@ const SECTIONS = [
       {
         id: "c6_1",
         text: "How often do employees ask HR or management the same recurring questions?",
-        options: [
-          "All the time.",
-          "A few times per week.",
-          "Occasionally.",
-          "Rarely — we have clear systems.",
-        ],
+        options: ["All the time.", "A few times per week.", "Occasionally.", "Rarely — we have clear systems."],
       },
       {
         id: "c6_2",
@@ -396,12 +357,7 @@ const SECTIONS = [
       {
         id: "c6_6",
         text: "How confident are you that employees receive accurate, consistent HR information?",
-        options: [
-          "Not confident.",
-          "Somewhat confident.",
-          "Mostly confident.",
-          "Very confident.",
-        ],
+        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
       },
     ],
   },
@@ -423,12 +379,7 @@ const SECTIONS = [
       {
         id: "c7_2",
         text: "How quickly does your business typically respond to new leads?",
-        options: [
-          "Hours to days.",
-          "A few hours.",
-          "Within 1 hour.",
-          "Automatically or instantly.",
-        ],
+        options: ["Hours to days.", "A few hours.", "Within 1 hour.", "Automatically or instantly."],
       },
       {
         id: "c7_3",
@@ -453,22 +404,12 @@ const SECTIONS = [
       {
         id: "c7_5",
         text: "How well do you track where leads are coming from (ads, social, referrals, etc.)?",
-        options: [
-          "We don’t track it.",
-          "Sometimes.",
-          "Most sources.",
-          "Fully tracked and labeled.",
-        ],
+        options: ["We don’t track it.", "Sometimes.", "Most sources.", "Fully tracked and labeled."],
       },
       {
         id: "c7_6",
         text: "How often do you lose leads because no one followed up fast enough?",
-        options: [
-          "Constantly.",
-          "Sometimes.",
-          "Rare.",
-          "Never — we have a great system.",
-        ],
+        options: ["Constantly.", "Sometimes.", "Rare.", "Never — we have a great system."],
       },
     ],
   },
@@ -480,12 +421,7 @@ const SECTIONS = [
       {
         id: "c8_1",
         text: "How many different systems does your team use daily?",
-        options: [
-          "6+ tools (chaos).",
-          "4–5 tools.",
-          "2–3 tools.",
-          "Mostly one main platform.",
-        ],
+        options: ["6+ tools (chaos).", "4–5 tools.", "2–3 tools.", "Mostly one main platform."],
       },
       {
         id: "c8_2",
@@ -500,12 +436,7 @@ const SECTIONS = [
       {
         id: "c8_3",
         text: "How often do you repeat the same task across multiple systems (copy/paste)?",
-        options: [
-          "Constantly.",
-          "Daily.",
-          "Sometimes.",
-          "Rarely or never.",
-        ],
+        options: ["Constantly.", "Daily.", "Sometimes.", "Rarely or never."],
       },
       {
         id: "c8_4",
@@ -520,22 +451,12 @@ const SECTIONS = [
       {
         id: "c8_5",
         text: "How do you track operational metrics (calls, time, tasks, errors)?",
-        options: [
-          "No tracking.",
-          "Manual spreadsheets.",
-          "Basic software.",
-          "Full dashboards and reporting.",
-        ],
+        options: ["No tracking.", "Manual spreadsheets.", "Basic software.", "Full dashboards and reporting."],
       },
       {
         id: "c8_6",
         text: "How confident are you in your current tech stack’s ability to scale?",
-        options: [
-          "It’s holding us back.",
-          "It’s okay, but we’ll outgrow it.",
-          "It’s solid.",
-          "Fully scalable and optimized.",
-        ],
+        options: ["It’s holding us back.", "It’s okay, but we’ll outgrow it.", "It’s solid.", "Fully scalable and optimized."],
       },
     ],
   },
@@ -544,6 +465,8 @@ const SECTIONS = [
 const OPTION_VALUE = [0, 1, 2, 3]; // A,B,C,D => 0..3
 
 export default function AssessmentPage() {
+  const router = useRouter();
+
   // Contact details assumed captured earlier (from hero CTA)
   const [lead] = useState({
     name: "",
@@ -564,7 +487,7 @@ export default function AssessmentPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(null); // currently unused, but kept so UI doesn’t break
   const [error, setError] = useState("");
 
   const totalQuestions = useMemo(
@@ -596,43 +519,35 @@ export default function AssessmentPage() {
     }));
   };
 
-  // current answer for this question
-  const currentAnswerValue =
-    answers[currentSection.key]?.[currentQuestionIndex];
+  // current answer for this question (not strictly needed, but harmless)
+  const currentAnswerValue = answers[currentSection.key]?.[currentQuestionIndex];
 
   // Is current section fully answered?
   const isCurrentSectionComplete = useMemo(() => {
     const sectionAnswers = answers[currentSection.key] || {};
-    return currentSection.questions.every(
-      (_, idx) => typeof sectionAnswers[idx] === "number"
-    );
+    return currentSection.questions.every((_, idx) => typeof sectionAnswers[idx] === "number");
   }, [answers, currentSection]);
 
   // Next button only for moving section→section or to results
-  const canGoNext =
-    !result && !submitting && isCurrentSectionComplete;
+  const canGoNext = !result && !submitting && isCurrentSectionComplete;
 
   const handleAnswered = (sectionKey, qIndex, optIndex) => {
     // Save selected answer
     handleSelect(sectionKey, qIndex, optIndex);
 
-    const isLastQuestionInSection =
-      qIndex === currentSection.questions.length - 1;
-    const isLastSection =
-      currentSectionIndex === SECTIONS.length - 1;
+    const isLastQuestionInSection = qIndex === currentSection.questions.length - 1;
+    const isLastSection = currentSectionIndex === SECTIONS.length - 1;
 
     // Auto-advance to next question within the section
     if (!isLastQuestionInSection) {
       setTimeout(() => {
-        setCurrentQuestionIndex((prev) =>
-          prev === qIndex ? prev + 1 : prev
-        );
+        setCurrentQuestionIndex((prev) => (prev === qIndex ? prev + 1 : prev));
       }, 140);
     } else if (!isLastSection) {
       // Last question in this section: pause here, show "Next Section" button
-      // (owner has a moment to see what they just answered)
+      // (gives them a beat before jumping)
     } else {
-      // Last question of last section – let the "See My Results" button handle submit
+      // Last question of last section – "See My Results" button will trigger submit
     }
   };
 
@@ -640,8 +555,7 @@ export default function AssessmentPage() {
     if (!canGoNext) return;
     setError("");
 
-    const isLastSection =
-      currentSectionIndex === SECTIONS.length - 1;
+    const isLastSection = currentSectionIndex === SECTIONS.length - 1;
 
     if (!isLastSection) {
       setCurrentSectionIndex((s) => s + 1);
@@ -662,8 +576,7 @@ export default function AssessmentPage() {
       setCurrentQuestionIndex((i) => i - 1);
     } else {
       const prevSectionIndex = currentSectionIndex - 1;
-      const prevQuestionsCount =
-        SECTIONS[prevSectionIndex].questions.length;
+      const prevQuestionsCount = SECTIONS[prevSectionIndex].questions.length;
       setCurrentSectionIndex(prevSectionIndex);
       setCurrentQuestionIndex(prevQuestionsCount - 1);
     }
@@ -674,6 +587,7 @@ export default function AssessmentPage() {
       setSubmitting(true);
       setError("");
 
+      // Build numeric answers payload
       const answersPayload = {};
       SECTIONS.forEach((section) => {
         const sectionAnswers = answers[section.key] || {};
@@ -683,26 +597,42 @@ export default function AssessmentPage() {
         });
       });
 
+      // Payload we send to /api/submit-assessment
+      const payload = {
+        email: lead.email || null,
+        companyName: lead.name || null,
+        answers: answersPayload,
+        lead, // full object if we want it later
+      };
+
       const res = await fetch("/api/submit-assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lead,
-          answers: answersPayload,
-        }),
+        body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        let message = "Failed to submit assessment.";
+        try {
+          const err = await res.json();
+          if (err?.error) message = err.error;
+        } catch (_) {
+          // ignore JSON parse failure
+        }
+        throw new Error(message);
+      }
 
       const data = await res.json();
 
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || "Something went wrong.");
+      if (!data.id) {
+        throw new Error("Missing assessment id from server.");
       }
 
-      setResult(data);
+      // 🚀 Redirect to Supabase-backed results page
+      router.push(`/results/${data.id}`);
     } catch (err) {
       console.error(err);
       setError(err.message || "Unable to submit assessment.");
-    } finally {
       setSubmitting(false);
     }
   };
@@ -718,15 +648,12 @@ export default function AssessmentPage() {
               : "HeavenDesk Automation Readiness Assessment"}
           </p>
           <h1 className="assessment-title">
-            {result
-              ? "Here’s how your business is performing today."
-              : "Let’s map where your business is losing time."}
+            {result ? "Here’s how your business is performing today." : "Let’s map where your business is losing time."}
           </h1>
           {!result && (
             <p className="assessment-subtitle">
               Answer a few quick questions and I’ll show you exactly where{" "}
-              <span className="gradient-text">Heaven</span>, your Digital
-              Operations Manager, can save you the most time.
+              <span className="gradient-text">Heaven</span>, your Digital Operations Manager, can save you the most time.
             </p>
           )}
         </header>
@@ -735,15 +662,11 @@ export default function AssessmentPage() {
         {!result && (
           <div className="assessment-progress">
             <div className="assessment-progress-label">
-              {currentSection.eyebrow} • Question{" "}
-              {currentQuestionIndex + 1} of{" "}
+              {currentSection.eyebrow} • Question {currentQuestionIndex + 1} of{" "}
               {currentSection.questions.length}
             </div>
             <div className="assessment-progress-bar">
-              <div
-                className="assessment-progress-fill"
-                style={{ width: `${progressPercent}%` }}
-              />
+              <div className="assessment-progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
         )}
@@ -773,11 +696,7 @@ export default function AssessmentPage() {
                 type="button"
                 className="assessment-button ghost"
                 onClick={goBack}
-                disabled={
-                  submitting ||
-                  (currentSectionIndex === 0 &&
-                    currentQuestionIndex === 0)
-                }
+                disabled={submitting || (currentSectionIndex === 0 && currentQuestionIndex === 0)}
               >
                 Back
               </button>
@@ -808,13 +727,7 @@ export default function AssessmentPage() {
   );
 }
 
-function SectionQuestionStep({
-  section,
-  question,
-  questionIndex,
-  answers,
-  onAnswered,
-}) {
+function SectionQuestionStep({ section, question, questionIndex, answers, onAnswered }) {
   return (
     <div className="assessment-card">
       <div className="assessment-step-header-row">
@@ -826,19 +739,13 @@ function SectionQuestionStep({
           <p className="assessment-question-text">{question.text}</p>
           <div className="assessment-options">
             {question.options.map((opt, optIndex) => {
-              const selected =
-                answers[questionIndex] === OPTION_VALUE[optIndex];
+              const selected = answers[questionIndex] === OPTION_VALUE[optIndex];
               return (
                 <button
                   key={optIndex}
                   type="button"
-                  className={
-                    "assessment-option" +
-                    (selected ? " selected" : "")
-                  }
-                  onClick={() =>
-                    onAnswered(section.key, questionIndex, optIndex)
-                  }
+                  className={"assessment-option" + (selected ? " selected" : "")}
+                  onClick={() => onAnswered(section.key, questionIndex, optIndex)}
                 >
                   <span className="assessment-option-label">
                     {String.fromCharCode(65 + optIndex)}.
@@ -855,7 +762,12 @@ function SectionQuestionStep({
 }
 
 function ResultsStep({ result }) {
-  const { overallScore, tier, sections, quickWins } = result;
+  const { overallScore, tier, sections, quickWins } = result || {
+    overallScore: 0,
+    tier: "",
+    sections: [],
+    quickWins: [],
+  };
 
   // Map lowest-scoring areas to “you can start doing this now” tips
   const ownerActions = useMemo(() => {
@@ -886,6 +798,8 @@ function ResultsStep({ result }) {
       ],
     };
 
+    if (!sections || sections.length === 0) return [];
+
     const sorted = [...sections].sort((a, b) => a.score - b.score);
     const worst = sorted.slice(0, 3);
 
@@ -902,9 +816,7 @@ function ResultsStep({ result }) {
 
   return (
     <div className="assessment-card">
-      <h2 className="assessment-step-title">
-        Your HeavenDesk Automation Readiness Score
-      </h2>
+      <h2 className="assessment-step-title">Your HeavenDesk Automation Readiness Score</h2>
 
       <div className="assessment-score-wrapper">
         <div className="assessment-score-main">
@@ -912,38 +824,31 @@ function ResultsStep({ result }) {
           <div className="assessment-score-meta">
             <p className="assessment-score-tier">{tier}</p>
             <p className="assessment-score-text">
-              This reflects how much of your current workload is still handled
-              manually — and how much time{" "}
-              <span className="gradient-text">Heaven</span>, your Digital
-              Operations Manager, can give back.
+              This reflects how much of your current workload is still handled manually — and how much time{" "}
+              <span className="gradient-text">Heaven</span>, your Digital Operations Manager, can give back.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="assessment-sections-breakdown">
-        <h3>Area-by-area breakdown</h3>
-        <div className="assessment-sections-grid">
-          {sections.map((sec) => (
-            <div key={sec.key} className="assessment-section-score">
-              <div className="assessment-section-top">
-                <span className="assessment-section-label">
-                  {sec.label}
-                </span>
-                <span className="assessment-section-value">
-                  {sec.score}
-                </span>
+      {sections && sections.length > 0 && (
+        <div className="assessment-sections-breakdown">
+          <h3>Area-by-area breakdown</h3>
+          <div className="assessment-sections-grid">
+            {sections.map((sec) => (
+              <div key={sec.key} className="assessment-section-score">
+                <div className="assessment-section-top">
+                  <span className="assessment-section-label">{sec.label}</span>
+                  <span className="assessment-section-value">{sec.score}</span>
+                </div>
+                <div className="assessment-progress-bar small">
+                  <div className="assessment-progress-fill" style={{ width: `${sec.score}%` }} />
+                </div>
               </div>
-              <div className="assessment-progress-bar small">
-                <div
-                  className="assessment-progress-fill"
-                  style={{ width: `${sec.score}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {ownerActions && ownerActions.length > 0 && (
         <div className="assessment-quickwins">
@@ -969,9 +874,8 @@ function ResultsStep({ result }) {
 
       <div className="assessment-cta-result">
         <p>
-          If you’d like, Heaven can{" "}
-          <strong>build a tailored automation plan</strong> for your business
-          and walk you through the exact flows that will save you the most time.
+          If you’d like, Heaven can <strong>build a tailored automation plan</strong> for your business and walk you
+          through the exact flows that will save you the most time.
         </p>
         <a href="#contact" className="assessment-button primary">
           Request a Discovery Call
