@@ -1,4 +1,8 @@
 // app/results/[id]/page.js
+// 🔗 Calendly URL with safe default
+const CALENDLY_URL =
+  process.env.NEXT_PUBLIC_CALENDLY_URL ||
+  "https://calendly.com/hello-heavendeskai";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
@@ -183,8 +187,13 @@ export default async function ResultsPage({ params }) {
               the most time.
             </p>
             <div className="assessment-cta-buttons">
-              <a href="#contact" className="assessment-button primary">
-                Request a Discovery Call
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="assessment-button primary"
+              >
+                Schedule a 25-minute HeavenDesk Discovery Call
               </a>
               <Link href="/" className="assessment-button ghost">
                 Back to HeavenDesk.ai

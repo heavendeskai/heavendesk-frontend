@@ -31,11 +31,7 @@ function computeScores(answers) {
 
     const score = max > 0 ? Math.round((raw / max) * 100) : 0;
 
-    return {
-      key,
-      label: SECTION_LABELS[key] || key,
-      score,
-    };
+    return { key, label: SECTION_LABELS[key] || key, score };
   });
 
   const overallScore =
@@ -50,7 +46,7 @@ function computeScores(answers) {
 
   const quickWins = weakest.map(
     (sec) =>
-      `Heaven can immediately remove busywork in **${sec.label}** by automating repetitive questions, routing, and follow-ups.`
+      `HeavenDesk.ai can immediately remove busywork in **${sec.label}** by automating repetitive questions, routing, and follow-ups.`
   );
 
   return { overallScore, tier, sections, quickWins };
@@ -68,7 +64,7 @@ export async function POST(request) {
       categoryScores[sec.key] = sec.score;
     });
 
-    // --- SAVE INTO SUPABASE ---
+    // SAVE TO SUPABASE
     const { data, error } = await supabase
       .from("assessments")
       .insert({
@@ -89,13 +85,15 @@ export async function POST(request) {
       );
     }
 
-    // Build results page URL
     const id = data.id;
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL || "https://heavendeskai.com";
     const resultUrl = `${baseUrl}/results/${id}`;
 
-    // --- SEND EMAIL TO YOU ---
+    // ---------------------------------------------------------
+    // TEMPORARILY DISABLED EMAIL SENDING (Resend domain pending)
+    // ---------------------------------------------------------
+    /*
     await resend.emails.send({
       from: "HeavenDesk.ai <hello@heavendeskai.com>",
       to: "ja@heavendeskai.com",
@@ -106,17 +104,10 @@ export async function POST(request) {
         <p><strong>Email:</strong> ${lead.email || "(none)"}</p>
         <p><strong>Company:</strong> ${lead.company || "(none)"}</p>
         <p><strong>Overall Score:</strong> ${scores.overallScore}</p>
-        
         <p><a href="${resultUrl}">View Results</a></p>
-
-        <hr/>
-        <pre style="font-family:monospace;font-size:13px">
-${JSON.stringify(body, null, 2)}
-        </pre>
       `,
     });
 
-    // --- SEND EMAIL TO USER (IF EMAIL PROVIDED) ---
     if (lead.email) {
       await resend.emails.send({
         from: "HeavenDesk.ai <hello@heavendeskai.com>",
@@ -125,36 +116,25 @@ ${JSON.stringify(body, null, 2)}
         html: `
           <div style="font-family:system-ui;background:#0f172a;padding:24px;color:white;">
             <h1>Your Results Are Ready</h1>
-            <p>Thank you for completing the assessment!</p>
-
-            <p>Your overall automation score:</p>
             <h2>${scores.overallScore}/100 — ${scores.tier}</h2>
-
-            <p>You can review your full breakdown here:</p>
-
             <p>
-              <a href="${resultUrl}"
-                 style="background:linear-gradient(135deg,#22d3ee,#f97316);
-                        padding:12px 20px;border-radius:16px;color:black;
-                        font-weight:600;text-decoration:none;">
+              <a href="${resultUrl}" style="background:linear-gradient(135deg,#22d3ee,#f97316);
+                padding:12px 20px;border-radius:16px;color:black;font-weight:600;text-decoration:none;">
                 View My Results
               </a>
             </p>
-
             <p style="margin-top:20px;">
-              Ready to translate this into real automation for your firm?<br/>
-              Schedule a short call with Jorge:
-            </p>
-            <p>
-              <a href="https://calendly.com/YOUR-LINK"
+              Schedule a call with Jorge:
+              <a href="https://calendly.com/hello-heavendeskai"
                  style="color:#38bdf8;text-decoration:underline;">
-                Schedule a Call
+                Book a Call
               </a>
             </p>
           </div>
         `,
       });
     }
+    */
 
     return NextResponse.json({
       ok: true,
