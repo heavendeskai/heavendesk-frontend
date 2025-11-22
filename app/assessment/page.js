@@ -3,6 +3,11 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
+// 🔗 Calendly URL pulled from env, with a safe default
+const CALENDLY_URL =
+  process.env.NEXT_PUBLIC_CALENDLY_URL ||
+  "https://calendly.com/hello-heavendeskai";
+
 const SECTIONS = [
   {
     key: "frontDesk",
@@ -213,7 +218,12 @@ const SECTIONS = [
       {
         id: "c4_1",
         text: "How consistently does your business post on social media?",
-        options: ["Almost never.", "A few times a month.", "Weekly.", "Daily or near-daily."],
+        options: [
+          "Almost never.",
+          "A few times a month.",
+          "Weekly.",
+          "Daily or near-daily.",
+        ],
       },
       {
         id: "c4_2",
@@ -258,7 +268,12 @@ const SECTIONS = [
       {
         id: "c4_6",
         text: "How confident are you in your overall digital presence?",
-        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
+        options: [
+          "Not confident.",
+          "Somewhat confident.",
+          "Mostly confident.",
+          "Very confident.",
+        ],
       },
     ],
   },
@@ -270,17 +285,32 @@ const SECTIONS = [
       {
         id: "c5_1",
         text: "How quickly do customers typically receive a response?",
-        options: ["Hours or next day.", "30–60 minutes.", "Within 10–20 minutes.", "Instantly (automated or staffed)."],
+        options: [
+          "Hours or next day.",
+          "30–60 minutes.",
+          "Within 10–20 minutes.",
+          "Instantly (automated or staffed).",
+        ],
       },
       {
         id: "c5_2",
         text: "How often do customers call or message asking the same repeating questions?",
-        options: ["Constantly.", "Several times a day.", "Occasionally.", "Rarely — we already have systems."],
+        options: [
+          "Constantly.",
+          "Several times a day.",
+          "Occasionally.",
+          "Rarely — we already have systems.",
+        ],
       },
       {
         id: "c5_3",
         text: "How easy is it for customers to find answers without calling you?",
-        options: ["Very difficult.", "Somewhat difficult.", "Usually easy.", "Extremely easy and intentional."],
+        options: [
+          "Very difficult.",
+          "Somewhat difficult.",
+          "Usually easy.",
+          "Extremely easy and intentional.",
+        ],
       },
       {
         id: "c5_4",
@@ -300,7 +330,12 @@ const SECTIONS = [
       {
         id: "c5_6",
         text: "How confident are you in your overall customer experience?",
-        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
+        options: [
+          "Not confident.",
+          "Somewhat confident.",
+          "Mostly confident.",
+          "Very confident.",
+        ],
       },
     ],
   },
@@ -312,7 +347,12 @@ const SECTIONS = [
       {
         id: "c6_1",
         text: "How often do employees ask HR or management the same recurring questions?",
-        options: ["All the time.", "A few times per week.", "Occasionally.", "Rarely — we have clear systems."],
+        options: [
+          "All the time.",
+          "A few times per week.",
+          "Occasionally.",
+          "Rarely — we have clear systems.",
+        ],
       },
       {
         id: "c6_2",
@@ -357,7 +397,12 @@ const SECTIONS = [
       {
         id: "c6_6",
         text: "How confident are you that employees receive accurate, consistent HR information?",
-        options: ["Not confident.", "Somewhat confident.", "Mostly confident.", "Very confident."],
+        options: [
+          "Not confident.",
+          "Somewhat confident.",
+          "Mostly confident.",
+          "Very confident.",
+        ],
       },
     ],
   },
@@ -379,7 +424,12 @@ const SECTIONS = [
       {
         id: "c7_2",
         text: "How quickly does your business typically respond to new leads?",
-        options: ["Hours to days.", "A few hours.", "Within 1 hour.", "Automatically or instantly."],
+        options: [
+          "Hours to days.",
+          "A few hours.",
+          "Within 1 hour.",
+          "Automatically or instantly.",
+        ],
       },
       {
         id: "c7_3",
@@ -404,12 +454,22 @@ const SECTIONS = [
       {
         id: "c7_5",
         text: "How well do you track where leads are coming from (ads, social, referrals, etc.)?",
-        options: ["We don’t track it.", "Sometimes.", "Most sources.", "Fully tracked and labeled."],
+        options: [
+          "We don’t track it.",
+          "Sometimes.",
+          "Most sources.",
+          "Fully tracked and labeled.",
+        ],
       },
       {
         id: "c7_6",
         text: "How often do you lose leads because no one followed up fast enough?",
-        options: ["Constantly.", "Sometimes.", "Rare.", "Never — we have a great system."],
+        options: [
+          "Constantly.",
+          "Sometimes.",
+          "Rare.",
+          "Never — we have a great system.",
+        ],
       },
     ],
   },
@@ -421,7 +481,12 @@ const SECTIONS = [
       {
         id: "c8_1",
         text: "How many different systems does your team use daily?",
-        options: ["6+ tools (chaos).", "4–5 tools.", "2–3 tools.", "Mostly one main platform."],
+        options: [
+          "6+ tools (chaos).",
+          "4–5 tools.",
+          "2–3 tools.",
+          "Mostly one main platform.",
+        ],
       },
       {
         id: "c8_2",
@@ -451,12 +516,22 @@ const SECTIONS = [
       {
         id: "c8_5",
         text: "How do you track operational metrics (calls, time, tasks, errors)?",
-        options: ["No tracking.", "Manual spreadsheets.", "Basic software.", "Full dashboards and reporting."],
+        options: [
+          "No tracking.",
+          "Manual spreadsheets.",
+          "Basic software.",
+          "Full dashboards and reporting.",
+        ],
       },
       {
         id: "c8_6",
         text: "How confident are you in your current tech stack’s ability to scale?",
-        options: ["It’s holding us back.", "It’s okay, but we’ll outgrow it.", "It’s solid.", "Fully scalable and optimized."],
+        options: [
+          "It’s holding us back.",
+          "It’s okay, but we’ll outgrow it.",
+          "It’s solid.",
+          "Fully scalable and optimized.",
+        ],
       },
     ],
   },
@@ -519,35 +594,34 @@ export default function AssessmentPage() {
     }));
   };
 
-  // current answer for this question (not strictly needed, but harmless)
   const currentAnswerValue = answers[currentSection.key]?.[currentQuestionIndex];
 
-  // Is current section fully answered?
   const isCurrentSectionComplete = useMemo(() => {
     const sectionAnswers = answers[currentSection.key] || {};
-    return currentSection.questions.every((_, idx) => typeof sectionAnswers[idx] === "number");
+    return currentSection.questions.every(
+      (_, idx) => typeof sectionAnswers[idx] === "number"
+    );
   }, [answers, currentSection]);
 
-  // Next button only for moving section→section or to results
   const canGoNext = !result && !submitting && isCurrentSectionComplete;
 
   const handleAnswered = (sectionKey, qIndex, optIndex) => {
-    // Save selected answer
     handleSelect(sectionKey, qIndex, optIndex);
 
-    const isLastQuestionInSection = qIndex === currentSection.questions.length - 1;
+    const isLastQuestionInSection =
+      qIndex === currentSection.questions.length - 1;
     const isLastSection = currentSectionIndex === SECTIONS.length - 1;
 
-    // Auto-advance to next question within the section
     if (!isLastQuestionInSection) {
       setTimeout(() => {
-        setCurrentQuestionIndex((prev) => (prev === qIndex ? prev + 1 : prev));
+        setCurrentQuestionIndex((prev) =>
+          prev === qIndex ? prev + 1 : prev
+        );
       }, 140);
     } else if (!isLastSection) {
-      // Last question in this section: pause here, show "Next Section" button
-      // (gives them a beat before jumping)
+      // End of section – wait for Next Section click
     } else {
-      // Last question of last section – "See My Results" button will trigger submit
+      // End of last section – See My Results will trigger submit
     }
   };
 
@@ -576,7 +650,8 @@ export default function AssessmentPage() {
       setCurrentQuestionIndex((i) => i - 1);
     } else {
       const prevSectionIndex = currentSectionIndex - 1;
-      const prevQuestionsCount = SECTIONS[prevSectionIndex].questions.length;
+      const prevQuestionsCount =
+        SECTIONS[prevSectionIndex].questions.length;
       setCurrentSectionIndex(prevSectionIndex);
       setCurrentQuestionIndex(prevQuestionsCount - 1);
     }
@@ -597,12 +672,10 @@ export default function AssessmentPage() {
         });
       });
 
-      // Payload we send to /api/submit-assessment
+      // 🔄 Payload now matches /api/submit-assessment
       const payload = {
-        email: lead.email || null,
-        companyName: lead.name || null,
+        lead,
         answers: answersPayload,
-        lead, // full object if we want it later
       };
 
       const res = await fetch("/api/submit-assessment", {
@@ -628,7 +701,6 @@ export default function AssessmentPage() {
         throw new Error("Missing assessment id from server.");
       }
 
-      // 🚀 Redirect to Supabase-backed results page
       router.push(`/results/${data.id}`);
     } catch (err) {
       console.error(err);
@@ -648,12 +720,15 @@ export default function AssessmentPage() {
               : "HeavenDesk Automation Readiness Assessment"}
           </p>
           <h1 className="assessment-title">
-            {result ? "Here’s how your business is performing today." : "Let’s map where your business is losing time."}
+            {result
+              ? "Here’s how your business is performing today."
+              : "Let’s map where your business is losing time."}
           </h1>
           {!result && (
             <p className="assessment-subtitle">
               Answer a few quick questions and I’ll show you exactly where{" "}
-              <span className="gradient-text">Heaven</span>, your Digital Operations Manager, can save you the most time.
+              <span className="gradient-text">Heaven</span>, your Digital
+              Operations Manager, can save you the most time.
             </p>
           )}
         </header>
@@ -662,11 +737,15 @@ export default function AssessmentPage() {
         {!result && (
           <div className="assessment-progress">
             <div className="assessment-progress-label">
-              {currentSection.eyebrow} • Question {currentQuestionIndex + 1} of{" "}
+              {currentSection.eyebrow} • Question{" "}
+              {currentQuestionIndex + 1} of{" "}
               {currentSection.questions.length}
             </div>
             <div className="assessment-progress-bar">
-              <div className="assessment-progress-fill" style={{ width: `${progressPercent}%` }} />
+              <div
+                className="assessment-progress-fill"
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
           </div>
         )}
@@ -696,7 +775,11 @@ export default function AssessmentPage() {
                 type="button"
                 className="assessment-button ghost"
                 onClick={goBack}
-                disabled={submitting || (currentSectionIndex === 0 && currentQuestionIndex === 0)}
+                disabled={
+                  submitting ||
+                  (currentSectionIndex === 0 &&
+                    currentQuestionIndex === 0)
+                }
               >
                 Back
               </button>
@@ -727,7 +810,13 @@ export default function AssessmentPage() {
   );
 }
 
-function SectionQuestionStep({ section, question, questionIndex, answers, onAnswered }) {
+function SectionQuestionStep({
+  section,
+  question,
+  questionIndex,
+  answers,
+  onAnswered,
+}) {
   return (
     <div className="assessment-card">
       <div className="assessment-step-header-row">
@@ -739,13 +828,18 @@ function SectionQuestionStep({ section, question, questionIndex, answers, onAnsw
           <p className="assessment-question-text">{question.text}</p>
           <div className="assessment-options">
             {question.options.map((opt, optIndex) => {
-              const selected = answers[questionIndex] === OPTION_VALUE[optIndex];
+              const selected =
+                answers[questionIndex] === OPTION_VALUE[optIndex];
               return (
                 <button
                   key={optIndex}
                   type="button"
-                  className={"assessment-option" + (selected ? " selected" : "")}
-                  onClick={() => onAnswered(section.key, questionIndex, optIndex)}
+                  className={
+                    "assessment-option" + (selected ? " selected" : "")
+                  }
+                  onClick={() =>
+                    onAnswered(section.key, questionIndex, optIndex)
+                  }
                 >
                   <span className="assessment-option-label">
                     {String.fromCharCode(65 + optIndex)}.
@@ -769,7 +863,6 @@ function ResultsStep({ result }) {
     quickWins: [],
   };
 
-  // Map lowest-scoring areas to “you can start doing this now” tips
   const ownerActions = useMemo(() => {
     const TEMPLATES = {
       frontDesk: [
@@ -816,7 +909,9 @@ function ResultsStep({ result }) {
 
   return (
     <div className="assessment-card">
-      <h2 className="assessment-step-title">Your HeavenDesk Automation Readiness Score</h2>
+      <h2 className="assessment-step-title">
+        Your HeavenDesk Automation Readiness Score
+      </h2>
 
       <div className="assessment-score-wrapper">
         <div className="assessment-score-main">
@@ -824,8 +919,10 @@ function ResultsStep({ result }) {
           <div className="assessment-score-meta">
             <p className="assessment-score-tier">{tier}</p>
             <p className="assessment-score-text">
-              This reflects how much of your current workload is still handled manually — and how much time{" "}
-              <span className="gradient-text">Heaven</span>, your Digital Operations Manager, can give back.
+              This reflects how much of your current workload is still
+              handled manually — and how much time{" "}
+              <span className="gradient-text">Heaven</span>, your Digital
+              Operations Manager, can give back.
             </p>
           </div>
         </div>
@@ -838,11 +935,18 @@ function ResultsStep({ result }) {
             {sections.map((sec) => (
               <div key={sec.key} className="assessment-section-score">
                 <div className="assessment-section-top">
-                  <span className="assessment-section-label">{sec.label}</span>
-                  <span className="assessment-section-value">{sec.score}</span>
+                  <span className="assessment-section-label">
+                    {sec.label}
+                  </span>
+                  <span className="assessment-section-value">
+                    {sec.score}
+                  </span>
                 </div>
                 <div className="assessment-progress-bar small">
-                  <div className="assessment-progress-fill" style={{ width: `${sec.score}%` }} />
+                  <div
+                    className="assessment-progress-fill"
+                    style={{ width: `${sec.score}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -874,11 +978,19 @@ function ResultsStep({ result }) {
 
       <div className="assessment-cta-result">
         <p>
-          If you’d like, Heaven can <strong>build a tailored automation plan</strong> for your business and walk you
-          through the exact flows that will save you the most time.
+          If you’d like, Heaven can{" "}
+          <strong>build a tailored automation plan</strong> for your
+          business and walk you through the exact flows that will save you
+          the most time.
         </p>
-        <a href="#contact" className="assessment-button primary">
-          Request a Discovery Call
+        {/* 🔗 This now opens your Calendly link in a new tab */}
+        <a
+          href={CALENDLY_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="assessment-button primary"
+        >
+          Schedule a 25-minute HeavenDesk Discovery Call
         </a>
       </div>
     </div>
